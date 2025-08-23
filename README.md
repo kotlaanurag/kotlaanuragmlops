@@ -1,117 +1,183 @@
 # MLOps Project
 
-## How to run?
+This repository contains the code and infrastructure for an end-to-end MLOps project. It includes data ingestion, preprocessing, model training, and deployment, all managed with tools like DVC, Docker, and Jenkins.
 
-```bash
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-dvc repro
-```
+## Table of Contents
 
----
+- [Getting Started](#getting-started)
+- [DVC Commands](#dvc-commands)
+- [Git Commands](#git-commands)
+- [Docker Commands](#docker-commands)
+- [CI/CD with GitHub Actions](#cicd-with-github-actions)
+- [Jenkins Setup](#jenkins-setup)
+
+## Getting Started
+
+To get the project up and running, follow these steps:
+
+1.  **Clone the repository:**
+
+    ```bash
+    git clone <repository-url>
+    cd <repository-name>
+    ```
+
+2.  **Create and activate a virtual environment:**
+
+    ```bash
+    python -m venv venv
+    source venv/bin/activate
+    ```
+
+3.  **Install the required dependencies:**
+
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4.  **Reproduce the DVC pipeline:**
+
+    ```bash
+    dvc repro
+    ```
 
 ## DVC Commands
 
+This project uses [DVC](https://dvc.org/) to manage the machine learning pipeline. Here are some common commands:
+
+<details>
+<summary>Click to expand</summary>
+
 ```bash
-git init
+# Initialize DVC
 dvc init
+
+# Reproduce the pipeline
 dvc repro
+
+# Visualize the pipeline
 dvc dag
+
+# Show metrics
 dvc metrics show
 ```
 
----
+</details>
 
-## Git & Github for MLOps
+## Git Commands
+
+This project uses [Git](https://git-scm.com/) for version control. Here are some common commands:
+
+<details>
+<summary>Click to expand</summary>
 
 ```bash
+# Check the status of the repository
 git status
-git add test.py
-git add .
-git rm --cached test.py
-git commit -m "updated"
 
-# To check branch
+# Add a file to the staging area
+git add <file-name>
+
+# Add all files to the staging area
+git add .
+
+# Remove a file from the staging area
+git rm --cached <file-name>
+
+# Commit the changes
+git commit -m "Your commit message"
+
+# Check the branches
 git branch
 
 # Create a new branch
-git checkout -b bappy
+git checkout -b <branch-name>
 
-# Switch the branch
-git checkout main
+# Switch to a different branch
+git checkout <branch-name>
 
-# Merge the branch
-git merge bappy
+# Merge a branch into the current branch
+git merge <branch-name>
+
+# Pull the latest changes from the remote repository
 git pull
 ```
 
----
+</details>
 
-## Docker Test
+## Docker Commands
+
+This project uses [Docker](https://www.docker.com/) to containerize the application. Here are some common commands:
+
+<details>
+<summary>Click to expand</summary>
+
+### Basic Commands
 
 ```bash
-docker pull hello-world
-docker run hello-world
-docker ps                                   # See a list of all running containers
-docker ps -a                                # See a list of all containers, even the ones not running
-docker rm <hash>                            # Remove the specified container from this machine
-docker rm $(docker ps -a -q)                # Remove all containers from this machine
-docker images -a                            # Show all images on this machine
-docker rmi <imagename>                      # Remove the specified image from this machine
-docker rmi $(docker images -q)              # Remove all images from this machine
+# Pull an image from Docker Hub
+docker pull <image-name>
+
+# Run an image
+docker run <image-name>
+
+# List all running containers
+docker ps
+
+# List all containers
+docker ps -a
+
+# Remove a container
+docker rm <container-id>
+
+# Remove all containers
+docker rm $(docker ps -a -q)
+
+# List all images
+docker images -a
+
+# Remove an image
+docker rmi <image-name>
+
+# Remove all images
+docker rmi $(docker images -q)
 ```
 
-### Docker Custom image
+### Custom Image
 
 ```bash
-docker build -t name:latest .
-docker run -p 8080:8080 name:latest
-docker run -d -p 8080:8080 name:latest
+# Build a custom image
+docker build -t <image-name>:<tag> .
+
+# Run a custom image
+docker run -p 8080:8080 <image-name>:<tag>
+
+# Run a custom image in detached mode
+docker run -d -p 8080:8080 <image-name>:<tag>
 ```
 
-### Push to Docker Hub:
+### Push to Docker Hub
 
 ```bash
+# Login to Docker Hub
 docker login
-docker push name:latest
+
+# Push an image to Docker Hub
+docker push <image-name>:<tag>
 ```
 
----
+</details>
 
-## AWS-CICD-Deployment-with-Github-Actions:
+## CI/CD with GitHub Actions
 
-1.  Login to AWS console.
-2.  Create IAM user for deployment
-    -   with specific access
-        1.  EC2 access : It is virtual machine
-        2.  ECR: Elastic Container registry to save your docker image in aws
+This project uses GitHub Actions for CI/CD. The pipeline is configured to build a Docker image, push it to Amazon ECR, and deploy it to an EC2 instance.
 
-### Description: About the deployment
+### AWS Setup
 
-1.  Build docker image of the source code
-2.  Push your docker image to ECR
-3.  Launch Your EC2
-4.  Pull Your image from ECR in EC2
-5.  Lauch your docker image in EC2
-
-### Policy:
-
-1.  `AmazonEC2ContainerRegistryFullAccess`
-2.  `AmazonEC2FullAccess`
-3.  Create ECR repo to store/save docker image
-    -   `495403531064.dkr.ecr.us-east-1.amazonaws.com/anuragmlproject`
-4.  Create EC2 machine (Ubuntu)
-5.  Open EC2 and Install docker in EC2 Machine:
-
-    **Optional**
-
-    ```bash
-    sudo apt-get update -y
-    sudo apt-get upgrade
-    ```
-
-    **Required**
+1.  **Create an IAM user** with `AmazonEC2ContainerRegistryFullAccess` and `AmazonEC2FullAccess` policies.
+2.  **Create an ECR repository** to store the Docker image.
+3.  **Launch an EC2 instance** (Ubuntu).
+4.  **Install Docker on the EC2 instance:**
 
     ```bash
     curl -fsSL https://get.docker.com -o get-docker.sh
@@ -120,33 +186,66 @@ docker push name:latest
     newgrp docker
     ```
 
----
+5.  **Configure the EC2 instance as a self-hosted runner** by following the instructions in your repository's `Settings > Actions > Runners` section.
+6.  **Add the following secrets** to your repository's `Settings > Secrets and variables > Actions` section:
+    -   `AWS_ACCESS_KEY_ID`
+    -   `AWS_SECRET_ACCESS_KEY`
+    -   `AWS_REGION`
+    -   `AWS_ECR_LOGIN_URI`
+    -   `ECR_REPOSITORY_NAME`
 
-## Configuration for Github Actions
+## Jenkins Setup
 
-Commands from gitrepo>settings>actions>runners>addnewselfhostedrunner>linux
+This project can also be deployed using Jenkins. Here are the steps to set up Jenkins on an EC2 instance:
 
-Commands:
+1.  **Install Java:**
 
--   Download
--   configure
-
-Run these commands in the vm(Ec2 Instance)
-
-![alt text](image-1.png)
-
----
-
-6.  **Configure EC2 as self-hosted runner:**
-
-    `setting>actions>runner>new self hosted runner> choose os> then run command one by one`
-
-7.  **Setup github secrets:**
-
+    ```bash
+    sudo apt update
+    sudo apt install openjdk-8-jdk -y
     ```
-    AWS_ACCESS_KEY_ID=
-    AWS_SECRET_ACCESS_KEY=
-    AWS_REGION = us-east-1
-    AWS_ECR_LOGIN_URI = demo>>  566373416292.dkr.ecr.ap-south-1.amazonaws.com
-    ECR_REPOSITORY_NAME = simple-app
+
+2.  **Install Jenkins:**
+
+    ```bash
+    wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
+    sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+    sudo apt update
+    sudo apt install jenkins -y
+    ```
+
+3.  **Start and enable Jenkins:**
+
+    ```bash
+    sudo systemctl start jenkins
+    sudo systemctl enable jenkins
+    sudo systemctl status jenkins
+    ```
+
+4.  **Install Docker:**
+
+    ```bash
+    curl -fsSL https://get.docker.com -o get-docker.sh
+    sudo sh get-docker.sh
+    sudo usermod -aG docker $USER
+    sudo usermod -aG docker jenkins
+    newgrp docker
+    ```
+
+5.  **Install AWS CLI:**
+
+    ```bash
+    sudo apt install awscli -y
+    ```
+
+6.  **Configure AWS CLI:**
+
+    ```bash
+    aws configure
+    ```
+
+7.  **Get the Jenkins admin password:**
+
+    ```bash
+    sudo cat /var/lib/jenkins/secrets/initialAdminPassword
     ```

@@ -1,0 +1,19 @@
+name: Trigger Jenkins Job
+
+on:
+  workflow_dispatch:
+
+jobs:
+  BBuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Trigger Jenkins Job
+        uses: jenkinsci/jenkinsfile-runner-action@v2
+        with:
+          url: ${{ secrets.JENKINS_URL }}
+          user: ${{ secrets.JENKINS_USER }}
+          job: ${{ secrets.JENKINS_JOB }}
+          token: ${{ secrets.JENKINS_TOKEN }}
