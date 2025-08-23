@@ -186,7 +186,7 @@ This project uses GitHub Actions for CI/CD. The pipeline is configured to build 
     newgrp docker
     ```
 
-5.  **Configure the EC2 instance as a self-hosted runner** by following the instructions in your repository's `Settings > Actions > Runners` section.
+5.  **Configure the EC2 instance as a self-hosted runner** by following the instructions in your github repository's `Settings > Actions > Runners` section.
 6.  **Add the following secrets** to your repository's `Settings > Secrets and variables > Actions` section:
     -   `AWS_ACCESS_KEY_ID`
     -   `AWS_SECRET_ACCESS_KEY`
